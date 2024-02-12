@@ -15,7 +15,7 @@ play:
     beq $t1, $t2, x_recb_count          #if ()
 
     li $t2, -1
-    bne $t3, $t2, revealAdjacentBombs   #if(!x) revealAdjacentBombs
+    bne $t3, $t2, revealNeighboringCells   #if(!x) revealAdjacentBombs
     
     li $t2, 1
     jr $t2      #return 1
