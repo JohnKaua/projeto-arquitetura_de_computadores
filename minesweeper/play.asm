@@ -4,7 +4,7 @@
 
 play:
     save_context
-
+    
     sll		$t0, $s2, 5
     sll		$t1, $s3, 2
     add		$t0, $t0, $t1
