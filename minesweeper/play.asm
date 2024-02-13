@@ -29,9 +29,8 @@ play:
         beq $t3, $t2, if_3                          # if(!x) revealAdjacentBombs !!!!!!!(falta arrumar)!!!!!!!
         j end
     
-    if_3:
-        jal revealAdjacentBombs
-        j end
+        if_3:
+            jal revealAdjacentBombs
 
     li $v0, 1                                       # return 1, jogo continua
     end:
