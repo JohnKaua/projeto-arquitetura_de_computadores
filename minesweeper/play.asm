@@ -25,10 +25,15 @@ play:
         move $t3, $v0                               # x = countAdjacentBombs
         move $t0, $t3                               # board = x
 
-        li $t2, -1                                  #                            !!!!!!!(falta arrumar)!!!!!!!
-        bne $t3, $t2, revealNeighboringCells        # if(!x) revealAdjacentBombs !!!!!!!(falta arrumar)!!!!!!!
+        li $t2, 0                                   #                            !!!!!!!(falta arrumar)!!!!!!!
+        beq $t3, $t2, if_3                          # if(!x) revealAdjacentBombs !!!!!!!(falta arrumar)!!!!!!!
+        j end
     
-        li $v0, 1                                   # return 1, jogo continua
+    if_3:
+        jal revealAdjacentBombs
+        j end
+
+    li $v0, 1                                       # return 1, jogo continua
     end:
     restore_context
     jr $ra
