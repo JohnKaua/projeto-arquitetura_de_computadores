@@ -4,29 +4,32 @@
 
 play:
     save_context
-    move $s0, $a0
 
-    li $t1, -1
-    beq $s0, $t0, return0
-
-    li $t1, -2
-    jal countAdjacentBombs
-    sw $t3, 0($v0) # t3 == x
-    beq $t1, $t2, x_recb_count          #if ()
+    sll		$t0, $s2, 5
+    sll		$t1, $s3, 2
+    add		$t0, $t0, $t1
+    add		$t0, $t0, $s0                           # $t0 = board[row][column]
 
     li $t2, -1
-    bne $t3, $t2, revealNeighboringCells   #if(!x) revealAdjacentBombs
+    beq $t0, $t2, if_1                              # if(board[row][column] == -1)
+
+    li $t2, -2
+    beq $t0, $t2, if_2                              # if(board[row][column] == -2)
+
+    if_1:
+        li $v0, 0                                   # return 0, game over
+        j end
+
+    if_2:
+        jal countAdjacentBombs
+        move $t3, $v0                               # x = countAdjacentBombs
+        move $t0, $t3                               # board = x
+
+        li $t2, -1                                  #                            !!!!!!!(falta arrumar)!!!!!!!
+        bne $t3, $t2, revealNeighboringCells        # if(!x) revealAdjacentBombs !!!!!!!(falta arrumar)!!!!!!!
     
-    li $t2, 1
-    jr $t2      #return 1
-
-    return0:
-    li $v0, 0
-    syscall
-
-    x_recb_count:
-    move $t3, $t1
-
+        li $v0, 1                                   # return 1, jogo continua
+    end:
     restore_context
     jr $ra
     
