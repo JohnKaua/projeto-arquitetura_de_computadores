@@ -12,11 +12,11 @@ revealNeighboringCells:
     addi $t2, $s1, 1 # t2 = row + 1
     sub $t3, $s2, 1 # j = column - 1
     addi $t4, $s2, 1 # t4 = column + 1 
-    begin_for_i_it:
-    bgt $t1, $t2, end_for_i_it
-    j begin_for_j_it
-    begin_for_j_it:
-    bgt $t3, $t4, end_for_j_it
+    begin_for_i_rn:
+    bgt $t1, $t2, end_for_i_rn
+    j begin_for_j_rn
+    begin_for_j_rn:
+    bgt $t3, $t4, end_for_j_rn
     bge $t1, 0, else_invalid
     blt $t1, SIZE, else_invalid
     bge $t3, 0, else_invalid
@@ -35,11 +35,11 @@ revealNeighboringCells:
 
     else_invalid:
     addi $t3, $t3, 1
-    j begin_for_j_it
-    end_for_j_it:
+    j begin_for_j_rn
+    end_for_j_rn:
     addi $t1, $t1, 1
-    j begin_for_i_it
-    end_for_i_it:
+    j begin_for_i_rn
+    end_for_i_rn:
     
     restore_context  
     jr $ra
