@@ -18,6 +18,7 @@ play:
 
     li      $t2, -2
     beq     $t1, $t2, if_2                          # if(board[row][column] == -2)
+    j       return1
 
     if_1:
         li      $v0, 0                              # return 0, game over
@@ -30,12 +31,13 @@ play:
 
         li      $t2, 0                              #                            !!!!!!!(falta arrumar)!!!!!!!
         beq     $t3, $t2, if_3                      # if(!x) revealAdjacentBombs !!!!!!!(falta arrumar)!!!!!!!
-        j       else_if_3
+        j       return1
     
-        if_3:
-            jal     revealNeighboringCells
-    else_if_3:
-        li          $v0, 1                              # return 1
+    if_3:
+        jal     revealNeighboringCells
+
+    return1:
+        li          $v0, 1                          # return 1
     end:
     restore_context
     jr      $ra
