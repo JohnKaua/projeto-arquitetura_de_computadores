@@ -33,7 +33,7 @@ play:
         j       else_if_3
     
         if_3:
-            jal     revealAdjacentBombs
+            jal     revealNeighboringCells
     else_if_3:
         li          $v0, 1                              # return 1
     end:

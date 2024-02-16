@@ -7,15 +7,14 @@ revealNeighboringCells:
     move $s0, $a0
     move $s1, $a1
     move $s2, $a2
-    
-    li $t5, 0 #count = 0
+
     sub $t1, $s1, 1 # i = row - 1
-    add $t2, $s1, 1 # t2 = row + 1
+    addi $t2, $s1, 1 # t2 = row + 1
+    sub $t3, $s2, 1 # j = column - 1
+    addi $t4, $s2, 1 # t4 = column + 1 
     begin_for_i_it:
     bgt $t1, $t2, end_for_i_it
-    
-    sub $t3, $s2, 1 # j = column - 1
-    add $t4, $s2, 1 # t4 = column + 1 
+    j begin_for_j_it
     begin_for_j_it:
     bgt $t3, $t4, end_for_j_it
     bge $t1, 0, else_invalid
@@ -27,21 +26,20 @@ revealNeighboringCells:
     sll $t7, $a1, 2
     add $t6, $t6, $t7
     add $t6, $t6, $s0
-    beq $t6, -1, else_invalid
+    beq $t6, -2, else_invalid
 
     jal countAdjacentBombs
     sw $t3, 0($v0) # t3 == x
-    beq $t1, $t2, x_recb_count  
     move $t6, $t3
+    beq $t3, 0, revealNeighboringCells
 
     else_invalid:
+    addi $t3, $t3, 1
     j begin_for_j_it
     end_for_j_it:
+    addi $t1, $t1, 1
     j begin_for_i_it
     end_for_i_it:
-    move $v0, $t5
-    x_recb_count:
-    move $t3, $t1
     
     restore_context  
     jr $ra
