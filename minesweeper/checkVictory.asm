@@ -16,7 +16,14 @@ checkVictory:
     begin_for_j_cv:						# for (int j = 0; j < SIZE; ++j)
     bge $t2, $t1, end_for_j_cv
     addi $t2, $t2, 1
-	bge $t4,$zero, if_func
+    #board[i][j]
+    sll		$t4, $t3, 5
+    sll		$t5, $t2, 2
+    add		$t4, $t4, $t5
+    add		$t4, $t4, $s0                           # $t0 = board[row][column] (endereço)
+    lw      $t5, 0($t4) 
+
+	bge $t5,$zero, if_func
 
     end_for_i_cv:
     mul $t5, $t1, $t1
