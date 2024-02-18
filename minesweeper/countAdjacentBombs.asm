@@ -27,7 +27,9 @@ countAdjacentBombs:
     add $t6, $t6, $t7
     add $t6, $t6, $s0
     lw $t8, 0($t6)
-    bne $t6, -1, else_invalid
+    li $t7, 1
+    sw $t7, 0($t6)
+    bne $t8, -1, else_invalid
     
     addi $t5, $t5, 1
     j end_func
