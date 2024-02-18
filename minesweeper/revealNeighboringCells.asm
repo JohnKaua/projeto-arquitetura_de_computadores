@@ -30,6 +30,7 @@ revealNeighboringCells:
     move $t3, $v0 # t3 == x
     move $t6, $t3
     beq $t3, 0, revealNeighboringCells
+    j end_for_i_rn
 
     else_invalid:
     addi $t3, $t3, 1

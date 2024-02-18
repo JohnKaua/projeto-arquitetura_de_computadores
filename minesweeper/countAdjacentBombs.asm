@@ -6,13 +6,14 @@ countAdjacentBombs:
     save_context
     
     li $t5, 0 #count = 0
-    sub $t1, $s2, 1 # i = row - 1
+    addi $t1, $s2, -1 # i = row - 1
     addi $t2, $s2, 1 # t2 = row + 1
-    sub $t3, $s3, 1 # j = column - 1
+    addi $t3, $s3, -1 # j = column - 1
     addi $t4, $s3, 1 # t4 = column + 1 
     begin_for_i_ca:
     bgt $t1, $t2, end_for_i_ca
     
+    addi $t3, $t3, 1 
     j begin_for_j_ca
     begin_for_j_ca:
     bgt $t3, $t4, end_for_j_ca
@@ -29,6 +30,7 @@ countAdjacentBombs:
     bne $t6, -1, else_invalid
     
     addi $t5, $t5, 1
+    j end_func
     
     else_invalid:
     addi $t3, $t3, 1
@@ -37,6 +39,7 @@ countAdjacentBombs:
     addi $t1, $t1, 1
     j begin_for_i_ca
     end_for_i_ca:
+    end_func:
     move $v0, $t5
     restore_context
     jr $ra
