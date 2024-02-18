@@ -51,8 +51,10 @@ main:
   
   addi $sp, $sp, -4
   sw $s0, 0 ($sp)
-  move $a0, $s2
-  move $a1, $s3
+  move $a0, $s1
+  move $a1, $s2
+  move $a2, $s0
+
   jal play
   addi $sp, $sp, 4
   bne $v0, $zero, else_if_main 	# if (!play(board, row, column)) {

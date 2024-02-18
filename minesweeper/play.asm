@@ -5,9 +5,12 @@
 play:
     save_context
     li      $v0, 1                                  # valor de $v0 = 1
+    move $s1, $a0 # s1 == linha
+    move $s2, $a1 # s2 == col
+    move $s0, $a2 # s3 == board
     
-    sll		$t0, $s2, 5
-    sll		$t1, $s3, 2
+    sll		$t0, $s1, 5
+    sll		$t1, $s2, 2
     add		$t0, $t0, $t1
     add		$t0, $t0, $s0                           # $t0 = board[row][column] (endereço)
 
@@ -25,6 +28,9 @@ play:
         j       end
 
     if_2:
+    	move $a0, $s1 # s1 == linha
+    	move $a1, $s2 # s2 == col
+    	move $a2, $s0 # s3 == board
         jal     countAdjacentBombs
         move    $t3, $v0                            # x = countAdjacentBombs
         move    $t1, $t3                            # board = x
