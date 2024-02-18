@@ -16,17 +16,17 @@ countAdjacentBombs:
     j begin_for_j_ca
     begin_for_j_ca:
     bgt $t3, $t4, end_for_j_ca
-    bge $t1, 0, else_invalid
-    blt $t1, SIZE, else_invalid
-    bge $t3, 0, else_invalid
-    blt $t3, SIZE, else_invalid
+    blt $t1, 0, else_invalid
+    bge $t1, SIZE, else_invalid
+    blt $t3, 0, else_invalid
+    bge $t3, SIZE, else_invalid
     # board[i][j] == -1
     sll $t6, $a0, 5
     sll $t7, $a1, 2
     add $t6, $t6, $t7
     add $t6, $t6, $s0
     lw $t8, 0($t6)
-    beq $t6, -1, else_invalid
+    bne $t6, -1, else_invalid
     
     addi $t5, $t5, 1
     

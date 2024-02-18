@@ -14,20 +14,20 @@ revealNeighboringCells:
     j begin_for_j_rn
     begin_for_j_rn:
     bgt $t3, $t4, end_for_j_rn
-    bge $t1, 0, else_invalid
-    blt $t1, SIZE, else_invalid
-    bge $t3, 0, else_invalid
-    blt $t3, SIZE, else_invalid
+    blt $t1, 0, else_invalid
+    bge $t1, SIZE, else_invalid
+    blt $t3, 0, else_invalid
+    bge $t3, SIZE, else_invalid
     # board[i][j] == -1
     sll $t6, $t1, 5
     sll $t7, $t3, 2
     add $t6, $t6, $t7
     add $t6, $t6, $s0
     lw $t8, 0($t6)
-    beq $t8, -2, else_invalid
+    bne $t8, -2, else_invalid
 
     jal countAdjacentBombs
-    sw $t3, 0($v0) # t3 == x
+    move $t3, $v0 # t3 == x
     move $t6, $t3
     beq $t3, 0, revealNeighboringCells
 
