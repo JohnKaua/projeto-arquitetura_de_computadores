@@ -21,19 +21,18 @@ play:
     j end
 
     if_2:
-        jal countAdjacentBombs
-        move $t3, $v0                           # x = countAdjacentBombs
-        move $t1, $t3                           # board = x
-
-        li $t2, 0                               #                            !!!!!!!(falta arrumar)!!!!!!!
-        beq $t3, $t2, if_3                      # if(!x) revealAdjacentBombs !!!!!!!(falta arrumar)!!!!!!!
-        j return1
+    jal countAdjacentBombs
+    move $t3, $v0                               # x = countAdjacentBombs
+    move $t1, $t3                               # board = x
+    li $t2, 0
+    beq $t3, $t2, if_3                          # if(!x) revealAdjacentBombs
+    j return1
     
     if_3:
-        jal revealNeighboringCells
+    jal revealNeighboringCells
 
     return1:
-        li $v0, 1                               # return 1
+    li $v0, 1                                   # return 1
 
     end:
     restore_context
