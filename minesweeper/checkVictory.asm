@@ -6,22 +6,22 @@ checkVictory:
     save_context
 	move $s0, $a0
 
-    li $t0, 0 #count
-    li $t3, 0 # i = 0
-    li $t2, 0 # j = 0
+    li   $t0, 0 #count
+    li   $t3, 0 # i = 0
+    li   $t2, 0 # j = 0
     begin_for_i_cv:						# for (int i = 0; i < SIZE; ++i)	
-    li $t1, SIZE
-    bge $t3, $t1, end_for_i_cv
-    j begin_for_j_cv
+    li   $t1, SIZE
+    bge  $t3, $t1, end_for_i_cv
+    j    begin_for_j_cv
     begin_for_j_cv:						# for (int j = 0; j < SIZE; ++j)
-    bge $t2, $t1, end_for_j_cv
+    bge  $t2, $t1, end_for_j_cv
     addi $t2, $t2, 1
     #board[i][j]
-    sll		$t4, $t3, 5
-    sll		$t5, $t2, 2
-    add		$t4, $t4, $t5
-    add		$t4, $t4, $s0                           # $t0 = board[row][column] (endereço)
-    lw      $t5, 0($t4) 
+    sll	 $t4, $t3, 5
+    sll	 $t5, $t2, 2
+    add	 $t4, $t4, $t5
+    add	 $t4, $t4, $s0                           # $t0 = board[row][column] (endereço)
+    lw   $t5, 0($t4) 
 
 	bge $t5,$zero, if_func
 
