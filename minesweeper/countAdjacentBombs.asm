@@ -49,4 +49,3 @@ countAdjacentBombs:
     move $v0, $s7
     restore_context
     jr $ra
-

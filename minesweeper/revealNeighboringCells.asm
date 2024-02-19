@@ -58,4 +58,3 @@ revealNeighboringCells:
     end_for_i_rn:
     restore_context  
     jr $ra
-

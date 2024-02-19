@@ -8,21 +8,23 @@ checkVictory:
 
     li   $s1, 0 #count
     li   $s3, 0 # i = 0
-    begin_for_i_cv:						# for (int i = 0; i < SIZE; ++i)	
+
+    begin_for_i_cv:
     li   $t1, SIZE
     bge  $s3, $t1, end_for_i_cv
     li   $s2, 0 # j = 0
-    begin_for_j_cv:						# for (int j = 0; j < SIZE; ++j)
+    begin_for_j_cv:
+
     bge  $s2, $t1, end_for_j_cv
-    #board[i][j]
     sll	 $t4, $s3, 5
     sll	 $t5, $s2, 2
     add	 $t4, $t4, $t5
-    add	 $t4, $t4, $s0                           # $t0 = board[row][column] (endereço)
-    lw   $s5, 0($t4) 
-    bge $s5,$zero, if_func
+    add	 $t4, $t4, $s0
+    lw   $s5, 0($t4) # $s5 = board[i][j]
+    bge $s5,$zero, if_func 
     addi $s2, $s2, 1
     j begin_for_j_cv
+
     end_for_i_cv:
     mul $t5, $t1, $t1
     sub $t5, $t5, BOMB_COUNT
