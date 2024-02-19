@@ -4,43 +4,57 @@
 
 revealNeighboringCells: 
     save_context
-    move $s0, $a0
-    move $s1, $a1
-    move $s2, $a2
+    move $s1, $a0 # $s1 == linha
+    move $s2, $a1 # $s2 == col
+    move $s0, $a2 # $s0 == board
 
-    sub $t1, $s1, 1 # i = row - 1
-    addi $t2, $s1, 1 # t2 = row + 1
-    sub $t3, $s2, 1 # j = column - 1
-    addi $t4, $s2, 1 # t4 = column + 1 
+    addi $s3, $s1, -1 # $s3 (i) = linha - 1
+
     begin_for_i_rn:
-    bgt $t1, $t2, end_for_i_rn
-    j begin_for_j_rn
-    begin_for_j_rn:
-    bgt $t3, $t4, end_for_j_rn
-    bge $t1, 0, else_invalid
-    blt $t1, SIZE, else_invalid
-    bge $t3, 0, else_invalid
-    blt $t3, SIZE, else_invalid
-    # board[i][j] == -1
-    sll $t6, $a0, 4
-    sll $t7, $a1, 2
-    add $t6, $t6, $t7
-    add $t6, $t6, $s0
-    beq $t6, -2, else_invalid
+    addi $t0, $s1, 1 # $t0 = linha + 1
+    bgt $s3, $t0, end_for_i_rn
+    addi $s4, $s2, -1
 
-    jal countAdjacentBombs
-    sw $t3, 0($v0) # t3 == x
-    move $t6, $t3
-    beq $t3, 0, revealNeighboringCells
+    begin_for_j_rn:
+    addi $t0, $s2, 1
+    bgt $s4, $t0, end_for_j_rn
+
+    blt $s3, 0, else_invalid
+    bge $s3, SIZE, else_invalid
+    blt $s4, 0, else_invalid
+    bge $s4, SIZE, else_invalid # validações overflow tabuleiro
+
+    sll $t0, $s3, 5
+    sll $t1, $s4, 2
+    add $t0, $t0, $t1
+    add $t0, $t0, $s0 # $t0 = endereço de board[i][j]
+    lw $s7, 0($t0) # $s7 = valor de board[i][j]
+
+    bne $s7, -2, else_invalid # if (board[i][j] == -2)
+
+    move $a0, $s3
+    move $a1, $s4
+
+    jal countAdjacentBombs # passando "i" e "j" como row e column
+
+    move $s5, $v0 # $s5 = countAdjacentBombs
+
+    sll $t0, $s3, 5
+    sll $t1, $s4, 2
+    add $t0, $t0, $t1
+    add $t0, $t0, $s0 # $t0 = endereço de board[i][j]
+    sw $s5, 0($t0) # board[i][j] = $s5
+    
+    beq $s5, 0, revealNeighboringCells
 
     else_invalid:
-    addi $t3, $t3, 1
+    addi $s4, $s4, 1
     j begin_for_j_rn
+
     end_for_j_rn:
-    addi $t1, $t1, 1
+    addi $s3, $s3, 1
     j begin_for_i_rn
+
     end_for_i_rn:
-    
     restore_context  
     jr $ra
-
