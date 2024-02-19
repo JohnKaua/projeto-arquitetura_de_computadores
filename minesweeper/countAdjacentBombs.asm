@@ -4,47 +4,49 @@
 
 countAdjacentBombs:
     save_context
-    move $s2, $a0 # s3 == linha
-    move $s3, $a1 # s2 == col
-    move $s0, $a2 # s3 == board
+    move $s1, $a0 # $s1 = linha
+    move $s2, $a1 # $s2 = coluna
+    move $s0, $a2 # $s0 = board
     
-    
-    li $t5, 0 #count = 0
-    addi $t1, $s2, -1 # i = row - 1
-    addi $t2, $s2, 1 # t2 = row + 1
-    addi $t3, $s3, -1 # j = column - 1
-    addi $t4, $s3, 1 # t4 = column + 1 
+    li $s7, 0 # $s7 (count) = 0
+
+    addi $s3, $s1, -1 # $s3 (i) = linha - 1
+
     begin_for_i_ca:
-    bgt $t1, $t2, end_for_i_ca
-    
-    j begin_for_j_ca
+    addi $t0, $s1, 1 # $t0 = linha + 1
+    bgt $s3, $t0, end_for_i_ca
+    addi $s4, $s2, -1 # $s4 (j) = coluna - 1
+
     begin_for_j_ca:
-    # board[i][j] == -1
-    sll $t6, $t1, 5
-    sll $t7, $t3, 2
-    add $t6, $t6, $t7
-    add $t6, $t6, $s0
-    lw $t7, 0($t6)
-    bne $t7, -1, else_invalid
-    bgt $t3, $t4, end_for_j_ca
-    blt $t1, 0, else_invalid
-    bge $t1, SIZE, else_invalid
-    blt $t3, 0, else_invalid
-    bge $t3, SIZE, else_invalid
-   
-    addi $t5, $t5, 1
-    addi $t3, $t3, 1
+    addi $t0, $s2 , 1 # $t0 = coluna + 1
+    bgt $s4, $t0, end_for_j_ca
+
+    blt $s3, 0, else_invalid
+    bge $s3, SIZE, else_invalid
+    blt $s4, 0, else_invalid
+    bge $s4, SIZE, else_invalid # validações
+
+    sll $t0, $s3, 5
+    sll $t1, $s4, 2
+    add $t0, $t0, $t1
+    add $t0, $t0, $s0 # $t0 = endereço de board[i][j]
+    lw $s6, 0($t0) # $s6 = valor de board[i][j]
+
+    bne $s6, -1, else_invalid
+    addi $s7, $s7, 1
+    addi $s4, $s4, 1
     j begin_for_j_ca
     
     else_invalid:
-    addi $t3, $t3, 1
+    addi $s4, $s4, 1
     j begin_for_j_ca
+
     end_for_j_ca:
-    addi $t1, $t1, 1
-    addi $t3, $s3, -1
+    addi $s3, $s3, 1
     j begin_for_i_ca
+
     end_for_i_ca:
-    move $v0, $t5
+    move $v0, $s7
     restore_context
     jr $ra
 
