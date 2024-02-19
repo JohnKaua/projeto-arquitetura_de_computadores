@@ -4,40 +4,39 @@
 
 checkVictory:
     save_context
-	move $s0, $a0
+   	move $s0, $a2 # $s0 = board
 
-    li   $t0, 0 #count
-    li   $t3, 0 # i = 0
-    li   $t2, 0 # j = 0
+    li   $s1, 0 #count
+    li   $s3, 0 # i = 0
     begin_for_i_cv:						# for (int i = 0; i < SIZE; ++i)	
     li   $t1, SIZE
-    bge  $t3, $t1, end_for_i_cv
-    j    begin_for_j_cv
+    bge  $s3, $t1, end_for_i_cv
+    li   $s2, 0 # j = 0
     begin_for_j_cv:						# for (int j = 0; j < SIZE; ++j)
-    bge  $t2, $t1, end_for_j_cv
-    addi $t2, $t2, 1
+    bge  $s2, $t1, end_for_j_cv
     #board[i][j]
-    sll	 $t4, $t3, 5
-    sll	 $t5, $t2, 2
+    sll	 $t4, $s3, 5
+    sll	 $t5, $s2, 2
     add	 $t4, $t4, $t5
     add	 $t4, $t4, $s0                           # $t0 = board[row][column] (endereço)
-    lw   $t5, 0($t4) 
-
-	bge $t5,$zero, if_func
-
+    lw   $s5, 0($t4) 
+    bge $s5,$zero, if_func
+    addi $s2, $s2, 1
+    j begin_for_j_cv
     end_for_i_cv:
     mul $t5, $t1, $t1
     sub $t5, $t5, BOMB_COUNT
-    blt $t0, $t5, return_0
+    blt $s1, $t5, return_0
     li $v0, 1
     j return_1
 
     if_func:
-    addi $t0, $t0, 1
+    addi $s1, $s1, 1
+    addi $s2, $s2, 1
     j begin_for_j_cv
 
     end_for_j_cv:
-    addi $t3, $t3, 1
+    addi $s3, $s3, 1
     j begin_for_i_cv
 
     return_0:
