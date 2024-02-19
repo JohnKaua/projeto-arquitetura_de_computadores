@@ -51,8 +51,8 @@ main:
   
   addi $sp, $sp, -4
   sw $s0, 0 ($sp)
-  move $a0, $s1
-  move $a1, $s2
+  move $a0, $s2
+  move $a1, $s3
   move $a2, $s0
 
   jal play
