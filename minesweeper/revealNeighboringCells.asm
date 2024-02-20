@@ -45,7 +45,8 @@ revealNeighboringCells:
     add $t0, $t0, $s0 # $t0 = endereço de board[i][j]
     sw $s5, 0($t0) # board[i][j] = $s5
     
-    beq $s5, 0, revealNeighboringCells
+    bne $s5, 0, else_invalid
+    jal revealNeighboringCells
 
     else_invalid:
     addi $s4, $s4, 1

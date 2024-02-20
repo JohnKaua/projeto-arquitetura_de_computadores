@@ -34,8 +34,6 @@ countAdjacentBombs:
 
     bne $s6, -1, else_invalid
     addi $s7, $s7, 1
-    addi $s4, $s4, 1
-    j begin_for_j_ca
     
     else_invalid:
     addi $s4, $s4, 1
