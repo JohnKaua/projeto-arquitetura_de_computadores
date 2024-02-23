@@ -79,3 +79,65 @@ int play(int board[][SIZE], int row, int column) {
 ```
 ___
 ## **Função "checkVictory"**
+```MIPS
+li   $s1, 0 #count
+li   $s3, 0 # i = 0
+```
+Declara variável count e i nos registradores **$s1** e **$s3**, respectivamente
+
+
+```MIPS
+begin_for_i_cv:
+li   $t1, SIZE
+bge  $s3, $t1, end_for_i_cv
+li   $s2, 0 # j = 0
+```
+Declara o começo da função "begin_for_i_cv", que faz a iteração das linhas do tabuleiro. Carrega o valor de SIZE em **$t1**, logo após, verifica se o valor de **$s3** é maior ou igual que **$t1**. Caso seja, pula para "end_for_i_cv", que acaba a iteração do i. Passando pela verificação, declara/reseta o valor da coluna no registrador **$s2**.
+
+```MIPS
+bge  $s2, $t1, end_for_j_cv
+sll	 $t4, $s3, 5
+sll	 $t5, $s2, 2
+add	 $t4, $t4, $t5
+add	 $t4, $t4, $s0
+lw   $s5, 0($t4) # $s5 = board[i][j]
+```
+bge verifica se o valor da coluna ultrapassa ou iguala 8, e, caso aconteça, o código pula para o fim da iteração do j em "end_for_j_cv". Após isso, **$t4** recebe o endereço da casa atual que está sendo verificada, e **$s5** recebe o valor da casa.
+```MIPS
+bge $s5,$zero, if_func 
+addi $s2, $s2, 1
+j begin_for_j_cv
+```
+Caso o valor da casa seja igual ou maior que zero, o código pula para o marcador if_func. Caso o contrário, adiciona mais um ao valor da coluna atual e recomeça a iteração do J.
+```MIPS
+if_func:
+addi $s1, $s1, 1
+addi $s2, $s2, 1
+j begin_for_j_cv
+```
+Ao entrar no bloco "if_func" adiciona 1 ao contador e ao valor da coluna, e pula de volta à iteração "begin_for_j_cv".
+```MIPS
+end_for_j_cv:
+addi $s3, $s3, 1
+j begin_for_i_cv
+```
+Ao finalizar a iteração da coluna, adiciona 1 ao valor da linha e recomeça a iteração da linha.
+```MIPS
+end_for_i_cv:
+mul $t5, $t1, $t1
+sub $t5, $t5, BOMB_COUNT
+blt $s1, $t5, return_0
+li $v0, 1
+j return_1
+```
+A finalizar a iteração da linha, subtrai SIZE ao  quadrado (**$t5**) menos a quantidade de bombas e, caso o contador seja menor que essa conta, pula para o código que retorna zero. Caso contrário, **$v0** recebe 1 e o código pula para retornar 1.
+```MIPS
+return_0:
+li $v0, 0
+
+return_1:
+restore_context
+jr $ra
+```
+Caso o código pule para "return_0", **$v0** recebe zero e assim termina restaurando e retornando 0. Caso o código pule para "return_1", **$v0** já será 1 e só retornará o valor de **$v0**.
+
