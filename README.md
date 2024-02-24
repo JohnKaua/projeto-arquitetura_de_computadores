@@ -65,17 +65,17 @@ E se o valor retornado por **countAdjacentBombs** for *0*, a função **revealNe
 ### **Função equivalente em C**
 ```C
 int play(int board[][SIZE], int row, int column) {
-        if (board[row][column] == -1) {
-            return 0;
-        }
-        if (board[row][column] == -2) {
-            int x = countAdjacentBombs(board, row, column);
-            board[row][column] = x;
-            if (!x)
-                revealAdjacentCells(board, row, column);
-        }
-        return 1;
+    if (board[row][column] == -1) {
+        return 0;
     }
+    if (board[row][column] == -2) {
+        int x = countAdjacentBombs(board, row, column);
+        board[row][column] = x;
+        if (!x)
+            revealAdjacentCells(board, row, column);
+        }
+    return 1;
+}
 ```
 ___
 ## **Função "checkVictory"**
@@ -140,4 +140,178 @@ restore_context
 jr $ra
 ```
 Caso o código pule para "return_0", **$v0** recebe zero e assim termina restaurando e retornando 0. Caso o código pule para "return_1", **$v0** já será 1 e só retornará o valor de **$v0**.
+### Função equivalente em C
+```C
+int checkVictory(int board[][SIZE]) {
+    int count = 0;
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            if (board[i][j] >= 0) {
+                count++;
+            }
+        }
+    }
+    if (count < SIZE * SIZE - BOMB_COUNT)
+        return 0;
+    return 1;
+}
+```
+___
+## **Função "countAjacentBombs"**
+```MIPS
+move $s1, $a0 # $s1 = linha
+move $s2, $a1 # $s2 = coluna
+move $s0, $a2 # $s0 = board
+```
+Movemos as coordenadas digitadas pelo jogador e endereço inicial do tabuleiro para variáveis **$s**
+```MIPS
+li $s7, 0 # $s7 (count) = 0
 
+addi $s3, $s1, -1 # $s3 (i) = linha - 1
+
+begin_for_i_ca:
+addi $t0, $s1, 1 # $t0 = linha + 1
+bgt $s3, $t0, end_for_i_ca
+addi $s4, $s2, -1 # $s4 (j) = coluna - 1
+
+begin_for_j_ca:
+addi $t0, $s2 , 1 # $t0 = coluna + 1
+bgt $s4, $t0, end_for_j_ca
+```
+Iniciamos um contador (**$s7**) em 0, i (**$s3**) é declarado como *linha - 1*, a linha "begin_for_i_ca" é demarcada, **$t0** recebe *linha +1* e é feito a verificação se **$s3** é maior que que **$t0**, caso sim, pula para a linha "end_for_i_ca". Depois j é declarado como *coluna - 1*, a linha "begin_for_j_ca" é demarcada, **$t0** recebe *linha + 1* e é feito a verificação se **$s4** é maior que **$t0**, caso sim, pula para a linha "end_for_j_ca"
+```MIPS
+blt $s3, 0, else_invalid
+bge $s3, SIZE, else_invalid
+blt $s4, 0, else_invalid
+bge $s4, SIZE, else_invalid # validações overflow tabuleiro
+```
+```MIPS
+else_invalid:
+addi $s4, $s4, 1
+j begin_for_j_ca
+```
+As verificações se as iterações estão ultrapassando o tabuleiro são feitas e caso alguma iteração esteja fora do tabuleiro, pula para a linha "else_invalid" que está no final do corpo da função *for* que itera nas as colunas, e então j (**$s4**) aumenta em 1
+```MIPS
+sll $t0, $s3, 5
+sll $t1, $s4, 2
+add $t0, $t0, $t1
+add $t0, $t0, $s0 # $t0 = endereço de board[i][j]
+lw $s6, 0($t0) # $s6 = valor de board[i][j]
+
+bne $s6, -1, else_invalid
+addi $s7, $s7, 1
+```
+É calculado o endereço de board[ i ][ j ] e guardado em **$t0** e então o valor no endereço é guardado em **$s6**, então é verificado se é uma bomba, caso seja, o contador aumenta em 1, se não, pula para a linha "else_invalid"
+```MIPS
+end_for_j_ca:
+addi $s3, $s3, 1
+j begin_for_i_ca
+
+end_for_i_ca:
+move $v0, $s7
+restore_context
+jr $ra
+```
+Então temos as linhas finais de "begin_for_i_ca" e "begin_for_j_ca" e o final da função
+### Função equivalente em C
+```C
+int countAdjacentBombs(int board[][SIZE], int row, int column) {
+    int count = 0;
+    for (int i = row - 1; i <= row + 1; ++i) {
+        for (int j = column - 1; j <= column + 1; ++j) {
+            if (i >= 0 && i < SIZE && j >= 0 && j < SIZE && board[i][j] == -1) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+```
+___
+## Função "revealNeighboringCells"
+```MIPS
+move $s1, $a0 # $s1 == linha
+move $s2, $a1 # $s2 == col
+move $s0, $a2 # $s0 == board
+```
+Movemos as coordenadas recebidas como parâmetro e endereço inicial do tabuleiro para variáveis **$s**
+```MIPS
+addi $s3, $s1, -1 # $s3 (i) = linha - 1
+
+begin_for_i_rn:
+addi $t0, $s1, 1 # $t0 = linha + 1
+bgt $s3, $t0, end_for_i_rn
+addi $s4, $s2, -1 # $s4 (j) = coluna - 1
+
+begin_for_j_rn:
+addi $t0, $s2, 1 # $t0 = coluna + 1
+bgt $s4, $t0, end_for_j_rn
+```
+O i (**$s3**) é declarado como *linha - 1*, a linha "begin_for_i_rn" é demarcada, **$t0** recebe *linha +1* e é feito a verificação se **$s3** é maior que que **$t0**, caso sim, pula para a linha "end_for_i_rn". Depois j é declarado como *coluna - 1*, a linha "begin_for_j_rn" é demarcada, **$t0** recebe *linha + 1* e é feito a verificação se **$s4** é maior que **$t0**, caso sim, pula para a linha "end_for_j_rn"
+```MIPS
+blt $s3, 0, else_invalid
+bge $s3, SIZE, else_invalid
+blt $s4, 0, else_invalid
+bge $s4, SIZE, else_invalid # validações overflow tabuleiro
+```
+```MIPS
+else_invalid:
+addi $s4, $s4, 1
+j begin_for_j_rn
+```
+As verificações se as iterações estão ultrapassando o tabuleiro são feitas e caso alguma iteração esteja fora do tabuleiro, pula para a linha "else_invalid" que está no final do corpo da função *for* que itera nas as colunas, e então j (**$s4**) aumenta em 1
+```MIPS
+sll $t0, $s3, 5
+sll $t1, $s4, 2
+add $t0, $t0, $t1
+add $t0, $t0, $s0 # $t0 = endereço de board[i][j]
+lw $s7, 0($t0) # $s7 = valor de board[i][j]
+
+bne $s7, -2, else_invalid # if (board[i][j] == -2)
+
+move $a0, $s3
+move $a1, $s4
+
+jal countAdjacentBombs # passando "i" e "j" como row e column
+
+move $s5, $v0 # $s5 = countAdjacentBombs
+
+sll $t0, $s3, 5
+sll $t1, $s4, 2
+add $t0, $t0, $t1
+add $t0, $t0, $s0 # $t0 = endereço de board[i][j]
+sw $s5, 0($t0) # board[i][j] = $s5
+
+bne $s5, 0, else_invalid
+jal revealNeighboringCells
+```
+É calculado o endereço de board[ i ][ j ] e guardado em **$t0** e então o valor no endereço é guardado em **$s6**, então é verificado se a casa nâo tem bomba, caso nâo tenha, a função é chamada **countAdjacentBombs** passando i e j como parâmetros e então a função escreve o valor retornado em board[ i ][ j ], se o valor for 0, a função **revealAdjacentBombs** é chamada recursivamente, se não, pula para a linha "else_invalid"
+```MIPS
+else_invalid:
+addi $s4, $s4, 1
+j begin_for_j_rn
+
+end_for_j_rn:
+addi $s3, $s3, 1
+j begin_for_i_rn
+
+end_for_i_rn:
+restore_context  
+jr $ra
+```
+Então temos a linha "else_invalid", as linhas finais de "begin_for_i_rn" e "begin_for_j_rn" e o final da função
+### Função equivalente em C
+```C
+void revealAdjacentCells(int board[][SIZE], int row, int column) {
+    for (int i = row - 1; i <= row + 1; ++i) {
+        for (int j = column - 1; j <= column + 1; ++j) {
+            if (i >= 0 && i < SIZE && j >= 0 && j < SIZE && board[i][j] == -2) {
+                int x = countAdjacentBombs(board, i, j);
+                board[i][j] = x;
+                if (!x)
+                    revealAdjacentCells(board, i, j);
+            }
+        }
+    }
+}
+```
